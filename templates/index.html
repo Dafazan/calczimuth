@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="flex flex-col w-screen h-screen">
+    <!-- TOP BAR -->
+    <!-- <div class="h-14 w-full px-5 bg-green-100 flex justify-between gap-2">
+        <div>DAFAZAN</div>
+        <div class="bg-yellow-100 flex items-center">
+
+
+        </div>
+
+    </div> -->
+    <div class="bg-red-900 w-full h-full flex">
+        <!-- LEFT BAR -->
+        <div class="bg-blue-500 w-[65%] h-full p-5 flex flex-col gap-2">
+
+            <form action="/upload" method="post" enctype="multipart/form-data" class="w-full flex flex-col gap-2">
+                <!-- UPLOAD CSV -->
+                <div class="flex gap-2 w-full">
+                    <div>
+                        <div class=" flex justify-center rounded-xl h-full">
+                            <button
+                                class="px-4 py-2 bg-indigo-900 text-white h-full border-r-white rounded-l-md hover:bg-indigo-700 hover:text-white font-semibold">KDH</button>
+                            <button
+                                class="px-4 py-2 bg-indigo-900 text-white h-full border-l-white rounded-r-md hover:bg-indigo-700 hover:text-white font-semibold">KDV</button>
+                        </div>
+                    </div>
+                    <div class="w-full bg-white rounded-md p-1 w-full space-y-3">
+                        <label class="block">
+                            <span class="sr-only">Choose csv</span>
+                            <input type="file" name="file" class="block w-full text-sm text-muted-foreground-1 focus:outline-hidden
+                                      file:me-4 file:py-2 file:px-4
+                                      file:rounded-lg file:border-0
+                                      file:text-sm file:font-semibold
+                                      file:cursor-pointer
+                                      file:bg-indigo-700 file:text-white hover:file:bg-primary-hover
+                                      file:disabled:opacity-50 file:disabled:pointer-events-none">
+                        </label>
+                    </div>
+                    <button
+                        class="px-4 py-2 bg-indigo-900 text-white w-full rounded-md hover:bg-indigo-700 hover:text-white font-semibold">KALKULASI</button>
+                </div>
+
+                <!-- TOMOL EXEKUSI -->
+
+            </form>
+            <!-- TABEL BOWDIH -->
+            <div class="bg-white w-full  rounded-md overflow-auto p-2">
+                <!-- TABEL CSV -->
+                <div class="bg-white w-full rounded-md overflow-auto p-2">
+
+                    <h2 class="font-bold mb-2">DATA CSV</h2>
+
+                    {% if raw_data %}
+                    <table class="table-auto w-full text-sm border">
+                        <thead>
+                            <tr>
+                                {% for col in raw_columns %}
+                                <th class="border px-2 py-1 bg-gray-100">{{ col }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for row in raw_data %}
+                            <tr>
+                                {% for col in raw_columns %}
+                                <td class="border px-2 py-1">{{ row[col] }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
+
+                </div>
+                <!-- TABEL HASIL -->
+                <div class="bg-white w-full rounded-md overflow-auto p-2">
+
+                    <h2 class="font-bold mb-2">HASIL PERHITUNGAN</h2>
+
+                    {% if calc_data %}
+                    <table class="table-auto w-full text-sm border">
+                        <thead>
+                            <tr>
+                                {% for col in calc_columns %}
+                                <th class="border px-2 py-1 bg-gray-100">{{ col }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for row in calc_data %}
+                            <tr>
+                                {% for col in calc_columns %}
+                                <td class="border px-2 py-1">{{ row[col] }}</td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
+
+                </div>
+
+            </div>
+        </div>
+        <!-- RIGHT BAR -->
+        <!-- RIGHT BAR -->
+
+        <div class="w-[35%] h-full bg-white  overflow-hidden flex flex-col">
+
+            <div class="h-full">
+                {% if map_html %}
+                {{ map_html|safe }}
+                {% else %}
+                <div class="flex items-center justify-center h-full text-gray-500">
+                    Upload CSV untuk menampilkan peta
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="h-full p-2 overflow-auto">
+                {% if plot_img %}
+                <img src="data:image/png;base64,{{ plot_img }}" class="w-full">
+                {% endif %}
+            </div>
+
+        </div>
+
+
+    </div>
+</div>
+{% endblock %}
