@@ -219,5 +219,9 @@ def upload():
         plot_img=plot_img
     )
 
+@app.route('/kdv')
+def result():
+    return render_template("vertical.html")
+
 if __name__ == "__main__":
     app.run(debug=True)
