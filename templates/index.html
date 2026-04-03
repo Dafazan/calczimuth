@@ -30,34 +30,49 @@
                         <div class="w-full bg-white rounded-md p-1 w-full space-y-3">
                         <label class="block">
                             <span class="sr-only">Choose csv</span>
-                            <input type="file" name="file" class="block w-full text-sm text-muted-foreground-1 focus:outline-hidden
-                                      file:me-4 file:py-2 file:px-4
-                                      file:rounded-lg file:border-0
-                                      file:text-sm file:font-semibold
-                                      file:cursor-pointer
-                                      file:bg-indigo-700 file:text-white hover:file:bg-primary-hover
-                                      file:disabled:opacity-50 file:disabled:pointer-events-none">
+                            <input type="file" name="file"
+                            onchange="confirmFileUpload(this)"
+                            class="block w-full text-sm text-muted-foreground-1 focus:outline-hidden
+                            file:me-4 file:py-2 file:px-4
+                            file:rounded-lg file:border-0
+                            file:text-sm file:font-semibold
+                            file:cursor-pointer
+                            file:bg-indigo-700 file:text-white hover:file:bg-primary-hover">
                         </label>
+                        
                     </div>
+                    
                     <div class="flex gap-2 w-full">
                         <p class="text-gray-400 w-3/6">X Awal</p>
                         <label class="block w-full">
                             
-                            <input type="text" name="#" class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
+                            <input type="text" name="x_awal" class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
                         </label>
                     </div>
                     <div class="flex gap-2 w-full">
                         <p class="text-gray-400 w-3/6">Y Awal</p>
                         <label class="block w-full">
                             
-                            <input type="text" name="#" class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
+                            <input type="text" name="y_awal" class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
                         </label>
                     </div>
                     <div class="flex gap-2 w-full">
                         <p class="text-gray-400 w-3/6">Azimuth Awal</p>
-                        <label class="block w-full">
-                            
-                            <input type="text" name="#" class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
+                        <label class="block w-full flex gap-2">
+                            <div class="flex gap-1">
+
+                                <input type="text" name="az_d" class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden"> <p class="text-white">D</p>
+                            </div>
+                            <div class="flex gap-1">
+
+                                <input type="text" name="az_m" class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
+                                <p class="text-white">M</p>
+                            </div>
+                            <div class="flex gap-1">
+
+                                <input type="text" name="az_s" class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
+                                <p class="text-white">S</p>
+                            </div>
                         </label>
                     </div>
                     </div>
@@ -100,6 +115,18 @@
                     {% endif %}
 
                 </div>
+                {% if info %}
+<div class="bg-white w-full rounded-md p-3 mb-2">
+    <h2 class="font-bold mb-2">INFORMASI SUDUT</h2>
+
+    <div class="text-sm space-y-1">
+        <p>Jumlah sudut pengukuran: {{ info.total_sudut }}</p>
+        <p>Jumlah sudut teoritis: {{ info.total_teoritis }}</p>
+        <p>Selisih sudut: {{ info.fs }}</p>
+        <p>Koreksi tiap sudut: {{ info.koreksi }}</p>
+    </div>
+</div>
+{% endif %}
                 <!-- TABEL HASIL -->
                 <div class="bg-white w-full rounded-md overflow-auto p-2">
 
@@ -157,4 +184,67 @@
 
     </div>
 </div>
+
+<!--  -->
+<div id="uploadModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-[70%]">
+        
+        <div class="flex items-center gap-3 mb-4">
+            <!-- ICON WARNING -->
+            <div class="bg-red-100 p-2 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" 
+                     class="h-6 w-6 text-red-600" 
+                     fill="none" 
+                     viewBox="0 0 24 24" 
+                     stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 9v2m0 4h.01M10.29 3.86l-7.4 12.8A1 1 0 003.76 18h16.48a1 1 0 00.87-1.34l-7.4-12.8a1 1 0 00-1.74 0z"/>
+                </svg>
+            </div>
+
+            <h2 class="text-lg font-semibold text-red-600">Konfirmasi Upload</h2>
+        </div>
+
+        <p class="mb-4 text-gray-600">File .csv harus dengan format ini:</p>
+        <p class="mb-4 text-gray-600" >Nama Titik alat,	Nama Titik Backsight,	Nama Titik Foresight,	Degree Backsight, Menit Backsight,	Detik Backsight,	Derajat Foresight,	Menit Foresight,	Detik Foresight,	Jarak Backsight,	Jarak Foresight</p>
+        <p class="mb-4">Apakah sudah sesuai?</p>
+
+        <div class="flex gap-2 justify-start">
+            <button onclick="cancelUpload()" class="px-4 py-2 bg-gray-400 text-white rounded">
+                Belum, batalkan
+            </button>
+            <button onclick="confirmUpload()" class="px-4 py-2 bg-indigo-700 text-white rounded">
+                Sesuai
+            </button>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+let selectedFileInput = null;
+
+function confirmFileUpload(input) {
+    selectedFileInput = input;
+
+    document.getElementById("uploadModal").classList.remove("hidden");
+    document.getElementById("uploadModal").classList.add("flex");
+}
+
+function cancelUpload() {
+    if (selectedFileInput) {
+        selectedFileInput.value = ""; // hapus file
+    }
+    closeModal();
+}
+
+function confirmUpload() {
+    closeModal();
+}
+
+function closeModal() {
+    document.getElementById("uploadModal").classList.add("hidden");
+}
+</script>
 {% endblock %}

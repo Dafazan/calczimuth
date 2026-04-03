@@ -2,87 +2,53 @@ from flask import Flask, render_template, request
 import pandas as pd
 import folium
 import utm
-
-app = Flask(__name__)
-
 import math
 
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import io
 import base64
 
-def buat_plot_poligon(X, Y):
+app = Flask(__name__)
 
-    x_coords = []
-    y_coords = []
-    labels = []
-
-    for titik in X:
-        x_coords.append(X[titik])
-        y_coords.append(Y[titik])
-        labels.append(titik)
-
-    plt.figure()
-
-    # garis poligon
-    plt.plot(x_coords, y_coords, marker='o')
-
-    # label titik
-    for i, label in enumerate(labels):
-        plt.text(x_coords[i], y_coords[i], label)
-
-    plt.title("Visualisasi Poligon Koordinat")
-    plt.xlabel("X")
-    plt.ylabel("Y")
-
-    plt.axis("equal")
-    plt.grid()
-
-    # simpan ke memory buffer
-    buf = io.BytesIO()
-    plt.savefig(buf, format="png", bbox_inches="tight")
-    plt.close()
-
-    buf.seek(0)
-
-    # convert ke base64
-    plot_base64 = base64.b64encode(buf.getvalue()).decode()
-
-    return plot_base64
-
+# =========================
+# DMS → DEG
+# =========================
 def dms_to_deg(d, m, s):
-    """Convert degree minute second to decimal degree"""
     return d + m/60 + s/3600
 
 
-def hitung_poligon(df):
+# =========================
+# HITUNG POLIGON (VERSI COLAB)
+# =========================
+def hitung_poligon(df, X0, Y0, az_awal):
 
-    # koordinat awal BM (ubah sesuai data kamu)
-    X = {"BM": 786289.114}
-    Y = {"BM": 9240733.076}
+    # koordinat awal
+    X = {"BM": X0}
+    Y = {"BM": Y0}
 
-    # azimuth awal BM -> TK1
+    # azimuth awal
     azimuth = {}
-    azimuth[0] = 34.4514
+    azimuth[0] = az_awal
 
     # =========================
     # HITUNG AZIMUTH
     # =========================
     for i in range(len(df)):
 
-        sudut = dms_to_deg(
-            df.loc[i, "deg_b"],
-            df.loc[i, "min_b"],
-            df.loc[i, "sec_b"]
-        )
+        deg = df.loc[i,"deg_b"]
+        minute = df.loc[i,"min_b"]
+        sec = df.loc[i,"sec_b"]
+
+        sudut = dms_to_deg(deg, minute, sec)
 
         if i > 0:
-
             az_prev = azimuth[i-1]
 
             az = az_prev + sudut - 180
 
-            # normalisasi 0-360
+            # normalisasi
             if az < 0:
                 az += 360
             if az > 360:
@@ -97,10 +63,15 @@ def hitung_poligon(df):
 
     for i in range(len(df)):
 
-        titik_awal = df.loc[i, "standing_alat"]
-        titik_tujuan = df.loc[i, "tk_b"]
+        deg = df.loc[i,"deg_b"]
+        minute = df.loc[i,"min_b"]
+        sec = df.loc[i,"sec_b"]
 
-        jarak = df.loc[i, "distance-b"]
+        sudut = dms_to_deg(deg, minute, sec)
+
+        titik_awal = df.loc[i,"standing_alat"]
+        titik_tujuan = df.loc[i,"tk_b"]
+        jarak = df.loc[i,"distance-b"]
 
         a = math.radians(azimuth[i])
 
@@ -112,6 +83,7 @@ def hitung_poligon(df):
 
         hasil.append({
             "titik": titik_tujuan,
+            "sudut": round(sudut,4),
             "azimuth": round(azimuth[i],4),
             "dx": round(dx,3),
             "dy": round(dy,3),
@@ -121,107 +93,137 @@ def hitung_poligon(df):
 
     return pd.DataFrame(hasil), X, Y
 
+
+# =========================
+# PLOT POLIGON
+# =========================
+def buat_plot_poligon(X, Y):
+
+    x_coords = []
+    y_coords = []
+    labels = []
+
+    for titik in X:
+        x_coords.append(X[titik])
+        y_coords.append(Y[titik])
+        labels.append(titik)
+
+    plt.figure()
+    plt.plot(x_coords, y_coords, marker='o')
+
+    for i, label in enumerate(labels):
+        plt.text(x_coords[i], y_coords[i], label)
+
+    plt.title("Visualisasi Poligon")
+    plt.axis("equal")
+    plt.grid()
+
+    buf = io.BytesIO()
+    plt.savefig(buf, format="png", bbox_inches="tight")
+    plt.close()
+
+    buf.seek(0)
+    return base64.b64encode(buf.getvalue()).decode()
+
+
+# =========================
+# PETA (FOLIUM)
+# =========================
 def buat_peta(df):
 
     coords = []
 
-    # ubah koordinat UTM → lat lon
     for i in range(len(df)):
-
         x = df.loc[i, "X"]
         y = df.loc[i, "Y"]
 
         lat, lon = utm.to_latlon(x, y, 48, "M")
-
         coords.append((lat, lon))
 
-    # buat map di titik pertama
-    m = folium.Map(
-    location=coords[0],
-    zoom_start=18,
-    width="100%",
-    height="100%"
-)
+    m = folium.Map(location=coords[0], zoom_start=18)
 
-    # marker tiap titik
     for i, (lat, lon) in enumerate(coords):
-
         titik = df.loc[i, "titik"]
+        folium.Marker([lat, lon], popup=titik).add_to(m)
 
-        folium.Marker(
-            [lat, lon],
-            popup=titik
-        ).add_to(m)
-
-    # garis poligon
-    folium.PolyLine(coords, color="red", weight=3).add_to(m)
+    folium.PolyLine(coords, color="red").add_to(m)
 
     return m._repr_html_()
 
 
+# =========================
+# ROUTES
+# =========================
 @app.route('/')
 def index():
-    return render_template("index.html", data=None, columns=None, map_html=None)
+    return render_template("index.html")
 
 
 @app.route('/upload', methods=['POST'])
 def upload():
 
     file = request.files['file']
-
     if not file:
         return render_template("index.html")
 
-    # ==============================
-    # 1. BACA CSV
-    # ==============================
     df = pd.read_csv(file)
 
-    # tabel csv asli
-    raw_data = df.to_dict(orient="records")
-    raw_columns = df.columns
+    # input form
+    X0 = float(request.form.get("x_awal"))
+    Y0 = float(request.form.get("y_awal"))
 
+    az_d = float(request.form.get("az_d"))
+    az_m = float(request.form.get("az_m"))
+    az_s = float(request.form.get("az_s"))
 
-    # ==============================
-    # 2. HITUNG POLIGON
-    # ==============================
-    hasil, X, Y = hitung_poligon(df)
+    az_awal = dms_to_deg(az_d, az_m, az_s)
 
-    calc_data = hasil.to_dict(orient="records")
-    calc_columns = hasil.columns
+    # =========================
+    # HITUNG UTAMA (COLAB STYLE)
+    # =========================
+    hasil, X, Y = hitung_poligon(df, X0, Y0, az_awal)
 
+    # =========================
+    # HITUNG INFO SUDUT (DISPLAY SAJA)
+    # =========================
+    n = len(df)
 
-    # ==============================
-    # 3. BUAT PETA LEAFLET
-    # ==============================
-    map_html = buat_peta(hasil)
+    total_sudut = 0
+    for i in range(n):
+        total_sudut += dms_to_deg(
+            df.loc[i,"deg_b"],
+            df.loc[i,"min_b"],
+            df.loc[i,"sec_b"]
+        )
 
+    total_teoritis = (n - 2) * 180
+    fs = total_teoritis - total_sudut
+    koreksi = fs / n
 
-    # ==============================
-    # 4. BUAT PLOT MATPLOTLIB
-    # ==============================
-    plot_img = buat_plot_poligon(X, Y)
+    info = {
+        "total_sudut": total_sudut,
+        "total_teoritis": total_teoritis,
+        "fs": fs,
+        "koreksi": koreksi
+    }
 
-
-    # ==============================
-    # 5. KIRIM KE HTML
-    # ==============================
+    # =========================
+    # RENDER
+    # =========================
     return render_template(
         "index.html",
-
-        raw_data=raw_data,
-        raw_columns=raw_columns,
-
-        calc_data=calc_data,
-        calc_columns=calc_columns,
-
-        map_html=map_html,
-        plot_img=plot_img
+        raw_data=df.to_dict(orient="records"),
+        raw_columns=df.columns,
+        calc_data=hasil.to_dict(orient="records"),
+        calc_columns=hasil.columns,
+        map_html=buat_peta(hasil),
+        plot_img=buat_plot_poligon(X, Y),
+        info=info   # 🔥 INI YANG BARU
     )
-
 @app.route('/kdv')
 def result():
     return render_template("vertical.html")
+
 
 if __name__ == "__main__":
     app.run(debug=True)
