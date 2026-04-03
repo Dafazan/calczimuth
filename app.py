@@ -158,6 +158,10 @@ def buat_peta(df):
 def index():
     return render_template("index.html")
 
+@app.route('/info')
+def info():
+    return render_template("info.html")
+
 
 @app.route('/upload', methods=['POST'])
 def upload():
