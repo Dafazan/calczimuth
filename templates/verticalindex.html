@@ -1,0 +1,182 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="flex flex-col w-screen h-screen bg-black">
+    <div class="bg-black w-full h-full md:flex">
+        <!-- LEFT BAR -->
+        <div class="md:w-full w-full md:h-full md:overflow-hidden overflow-auto p-5 flex flex-col gap-2">
+
+            <form action="/uploadkdv" method="post" enctype="multipart/form-data" class="w-full flex flex-col gap-2">
+                <!-- UPLOAD CSV -->
+                <div class="md:flex gap-2 w-full">
+                    <div class="">
+                        <div class="flex w-full justify-center rounded-xl mb-2">
+                            <a href="/"
+                                class="px-4 py-2 bg-gray-500 text-gray-800 rounded-l-md hover:bg-indigo-900 hover:text-white font-semibold w-full text-center">
+                                KDH
+                            </a>
+                            <a href="/kdv"
+                                class="px-4 py-2 bg-indigo-900 text-white rounded-r-md hover:bg-indigo-900 hover:text-white font-semibold w-full text-center">
+                                KDV
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col gap-2 w-full">
+                        <!-- INPUT FILE -->
+                        <div class="w-full bg-white rounded-md p-1 space-y-3">
+                            <label class="block">
+                                <span class="sr-only">Choose csv</span>
+                                <input type="file" name="file"
+                                    class="block w-full text-sm text-muted-foreground-1 focus:outline-hidden
+                                                            file:me-4 file:py-2 file:px-4
+                                                            file:rounded-lg file:border-0
+                                                            file:text-sm file:font-semibold
+                                                            file:cursor-pointer
+                                                            file:bg-indigo-700 file:text-white hover:file:bg-primary-hover">
+                            </label>
+                        </div>
+
+                        <!-- INPUT ELEVASI -->
+                        <div class="flex gap-2 w-full">
+                            <p class="text-gray-400 w-3/6">Z Awal</p>
+                            <label class="block w-full">
+                                <input type="text" name="nilai_awal" required
+                                    class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- TOMBOL -->
+                    <div class="md:w-1/3 w-full md:h-full mt-2 md:mt-0">
+                        <button
+                            class="px-4 w-full h-full py-3 bg-indigo-900 text-white rounded-md hover:bg-indigo-700 hover:text-white font-semibold">
+                            KALKULASI
+                        </button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- ERROR MESSAGE -->
+            {% if error %}
+            <div class="bg-red-100 text-red-700 p-3 rounded-md">
+                {{ error }}
+            </div>
+            {% endif %}
+
+            <!-- TABEL -->
+            <div class="bg-white w-full rounded-md overflow-auto p-2">
+
+                <!-- DATA CSV -->
+                <div class="bg-white w-full rounded-md overflow-auto p-2">
+                    <h2 class="font-bold mb-2">DATA CSV</h2>
+
+                    <table class="table-auto w-full text-sm border">
+                        <thead>
+                            <tr>
+                                <th class="border px-2 py-1 bg-gray-100">Seksi</th>
+                                <th class="border px-2 py-1 bg-gray-100">TK Belakang</th>
+                                <th class="border px-2 py-1 bg-gray-100">TK Muka</th>
+                                <th class="border px-2 py-1 bg-gray-100">BT B1</th>
+                                <th class="border px-2 py-1 bg-gray-100">BT B2</th>
+                                <th class="border px-2 py-1 bg-gray-100">BT M1</th>
+                                <th class="border px-2 py-1 bg-gray-100">BT M2</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if data_csv %}
+                            {% for row in data_csv %}
+                            <tr>
+                                <td class="border px-2 py-1">{{ row.seksi }}</td>
+                                <td class="border px-2 py-1">{{ row.tk_b }}</td>
+                                <td class="border px-2 py-1">{{ row.tk_m }}</td>
+                                <td class="border px-2 py-1">{{ row.bt_b_1 }}</td>
+                                <td class="border px-2 py-1">{{ row.bt_b_2 }}</td>
+                                <td class="border px-2 py-1">{{ row.bt_m_1 }}</td>
+                                <td class="border px-2 py-1">{{ row.bt_m_2 }}</td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="border px-2 py-1 text-center text-gray-500">
+                                    Data belum tersedia
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- INFORMASI -->
+                <div class="bg-white w-full rounded-md p-3 mb-2">
+                    <h2 class="font-bold mb-2">INFORMASI</h2>
+                    <div class="text-sm space-y-1">
+                        {% if fh is not none %}
+                        <p><strong>Kesalahan Penutupan (fh):</strong> {{ fh }}</p>
+                        <p><strong>Total Jarak:</strong> {{ total_jarak }}</p>
+                        {% else %}
+                        <p class="text-gray-500">Belum ada perhitungan.</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- HASIL PERHITUNGAN -->
+                <div class="bg-white w-full rounded-md overflow-auto p-2">
+                    <h2 class="font-bold mb-2">HASIL PERHITUNGAN</h2>
+
+                    <table class="table-auto w-full text-sm border">
+                        <thead>
+                            <tr>
+                                <th class="border px-2 py-1 bg-gray-100">Seksi</th>
+                                <th class="border px-2 py-1 bg-gray-100">Jarak</th>
+                                <th class="border px-2 py-1 bg-gray-100">Δh</th>
+                                <th class="border px-2 py-1 bg-gray-100">Koreksi</th>
+                                <th class="border px-2 py-1 bg-gray-100">Δh Terkoreksi</th>
+                                <th class="border px-2 py-1 bg-gray-100">Elevasi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if hasil %}
+                            {% for row in hasil %}
+                            <tr>
+                                <td class="border px-2 py-1">{{ row.seksi }}</td>
+                                <td class="border px-2 py-1">{{ "%.2f"|format(row.d_sect) }}</td>
+                                <td class="border px-2 py-1">{{ "%.4f"|format(row.diff) }}</td>
+                                <td class="border px-2 py-1">{{ "%.6f"|format(row.koreksi_kdv) }}</td>
+                                <td class="border px-2 py-1">{{ "%.6f"|format(row.delta_h_koreksi) }}</td>
+                                <td class="border px-2 py-1">{{ "%.6f"|format(row.elevasi_terkoreksi) }}</td>
+                            </tr>
+                            {% endfor %}
+                            {% else %}
+                            <tr>
+                                <td colspan="6" class="border px-2 py-1 text-center text-gray-500">
+                                    Hasil belum tersedia
+                                </td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PETA & PLOT (mobile only) -->
+            <div class="md:hidden w-full bg-white rounded-md overflow-hidden"></div>
+        </div>
+
+        <!-- RIGHT BAR (desktop only) -->
+        <!-- <div class="hidden md:flex w-[35%] h-full bg-white overflow-hidden flex-col">
+            <div class="h-full"></div>
+            <div class="h-full p-2 overflow-auto"></div>
+        </div> -->
+    </div>
+</div>
+
+<!-- FLOATING INFO BUTTON -->
+<a href="/info"
+    class="fixed bottom-6 right-6 z-50 bg-indigo-700 hover:bg-indigo-500 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-colors duration-200">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" />
+    </svg>
+</a>
+{% endblock %}

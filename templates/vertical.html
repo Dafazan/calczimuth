@@ -4,47 +4,54 @@
 <div class="flex flex-col w-screen h-screen bg-black">
     <div class="bg-black w-full h-full md:flex">
         <!-- LEFT BAR -->
-        <div class="md:w-[65%] w-full md:h-full md:overflow-hidden overflow-auto p-5 flex flex-col gap-2">
+        <div class="md:w-full w-full md:h-full md:overflow-hidden overflow-auto p-5 flex flex-col gap-2">
 
-            <form action="/upload" method="post" enctype="multipart/form-data" class="w-full flex flex-col gap-2">
+            <form action="/uploadkdv" method="post" enctype="multipart/form-data" class="w-full flex flex-col gap-2">
                 <!-- UPLOAD CSV -->
                 <div class="md:flex gap-2 w-full">
                     <div class="">
                         <div class="flex w-full justify-center rounded-xl mb-2">
                             <a href="/"
-                                class="px-4 py-2 bg-gray-500 text-gray-800 rounded-l-md hover:bg-indigo-900 hover:text-white font-semibold w-full text-center
-                                ">KDH</a>
+                                class="px-4 py-2 bg-gray-500 text-gray-800 rounded-l-md hover:bg-indigo-900 hover:text-white font-semibold w-full text-center">
+                                KDH
+                            </a>
                             <a href="/kdv"
-                                class="px-4 py-2 bg-indigo-900 text-white rounded-r-md hover:bg-indigo-900 hover:text-white font-semibold w-full text-center ">KDV</a>
+                                class="px-4 py-2 bg-indigo-900 text-white rounded-r-md hover:bg-indigo-900 hover:text-white font-semibold w-full text-center">
+                                KDV
+                            </a>
                         </div>
                     </div>
+
                     <div class="flex flex-col gap-2 w-full">
-                        <div class="w-full bg-white rounded-md p-1 w-full space-y-3">
+                        <!-- INPUT FILE -->
+                        <div class="w-full bg-white rounded-md p-1 space-y-3">
                             <label class="block">
                                 <span class="sr-only">Choose csv</span>
-                                <input type="file" name="file"
-                                    
-                                    class="block w-full text-sm text-muted-foreground-1 focus:outline-hidden
-                                    file:me-4 file:py-2 file:px-4
-                                    file:rounded-lg file:border-0
-                                    file:text-sm file:font-semibold
-                                    file:cursor-pointer
-                                    file:bg-indigo-700 file:text-white hover:file:bg-primary-hover">
+                                <input type="file" name="file" onchange="confirmFileUpload(this)" class="block w-full text-sm text-muted-foreground-1 focus:outline-hidden
+                                                file:me-4 file:py-2 file:px-4
+                                                file:rounded-lg file:border-0
+                                                file:text-sm file:font-semibold
+                                                file:cursor-pointer
+                                                file:bg-indigo-700 file:text-white hover:file:bg-primary-hover">
                             </label>
                         </div>
 
+                        <!-- INPUT ELEVASI -->
                         <div class="flex gap-2 w-full">
                             <p class="text-gray-400 w-3/6">Z Awal</p>
                             <label class="block w-full">
-                                <input type="text" name="#" class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
+                                <input type="text" name="nilai_awal" required
+                                    class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
                             </label>
                         </div>
-                       
-                        
                     </div>
+
+                    <!-- TOMBOL -->
                     <div class="md:w-1/3 w-full md:h-full mt-2 md:mt-0">
                         <button
-                            class="px-4 w-full h-full py-3 bg-indigo-900 text-white w-full rounded-md hover:bg-indigo-700 hover:text-white font-semibold">KALKULASI</button>
+                            class="px-4 w-full h-full py-3 bg-indigo-900 text-white rounded-md hover:bg-indigo-700 hover:text-white font-semibold">
+                            KALKULASI
+                        </button>
                     </div>
                 </div>
             </form>
@@ -54,95 +61,59 @@
                 <!-- TABEL CSV -->
                 <div class="bg-white w-full rounded-md overflow-auto p-2">
                     <h2 class="font-bold mb-2">DATA CSV</h2>
-                    
-                    <table class="table-auto w-full text-sm border">
-                        <thead>
-                            <tr>
-                               
-                                <th class="border px-2 py-1 bg-gray-100">t1</th>
-                                
-                            </tr>
-                        </thead>
-                        <tbody>
-                           
-                            <tr>
-                               
-                                <td class="border px-2 py-1">a1</td>
-                                
-                            </tr>
-                           
-                        </tbody>
-                    </table>
-                    
+
+
+
                 </div>
 
-             
-                <div class="bg-white w-full rounded-md p-3 mb-2">
-                    <h2 class="font-bold mb-2">INFORMASI</h2>
-                    <div class="text-sm space-y-1">
-                       <p>ingfo</p>
-                    </div>
-                </div>
-               
+
 
                 <!-- TABEL HASIL -->
                 <div class="bg-white w-full rounded-md overflow-auto p-2">
                     <h2 class="font-bold mb-2">HASIL PERHITUNGAN</h2>
-                   
-                    <table class="table-auto w-full text-sm border">
-                        <thead>
-                            <tr>
-                               <th class="border px-2 py-1 bg-gray-100">t1</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            
-                            <tr>
-                               <th class="border px-2 py-1 bg-gray-100">a1</th>
-                            </tr>
-                            
-                        </tbody>
-                    </table>
-                    
+
+
+
                 </div>
             </div>
 
             <!-- PETA & PLOT (mobile only) -->
             <div class="md:hidden w-full bg-white rounded-md overflow-hidden">
-                
+
             </div>
         </div>
 
         <!-- RIGHT BAR (desktop only) -->
-        <div class="hidden md:flex w-[35%] h-full bg-white overflow-hidden flex-col">
+        <!-- <div class="hidden md:flex w-[35%] h-full bg-white overflow-hidden flex-col">
             <div class="h-full">
-                
+
             </div>
             <div class="h-full p-2 overflow-auto">
-                
+
             </div>
-        </div>
+        </div> -->
     </div>
 </div>
 
 <!-- MODAL -->
-<!-- <div id="uploadModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+<div id="uploadModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
     <div class="bg-white p-6 rounded-lg shadow-lg w-[90%] md:w-[70%]">
         <div class="flex items-center gap-3 mb-4">
             <div class="bg-red-100 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     class="h-6 w-6 text-red-600"
-                     fill="none"
-                     viewBox="0 0 24 24"
-                     stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 9v2m0 4h.01M10.29 3.86l-7.4 12.8A1 1 0 003.76 18h16.48a1 1 0 00.87-1.34l-7.4-12.8a1 1 0 00-1.74 0z"/>
+                        d="M12 9v2m0 4h.01M10.29 3.86l-7.4 12.8A1 1 0 003.76 18h16.48a1 1 0 00.87-1.34l-7.4-12.8a1 1 0 00-1.74 0z" />
                 </svg>
             </div>
             <h2 class="text-lg font-semibold text-red-600">Konfirmasi Upload</h2>
         </div>
-        <p class="mb-4 text-gray-600">File .csv harus dengan format ini:</p>
-        <p class="mb-4 text-gray-600 text-xs md:text-sm">Nama Titik alat, Nama Titik Backsight, Nama Titik Foresight, Degree Backsight, Menit Backsight, Detik Backsight, Derajat Foresight, Menit Foresight, Detik Foresight, Jarak Backsight, Jarak Foresight</p>
+        <p class="mb-4 text-gray-600">File .csv harus merupakan pengukuran <span class="text-blue-500">Poligon
+                Tertutup dengan 2 Slag per Seksi</span> dan memiliki kolom dengan format nama ini:</p>
+        <p class="mb-4 text-blue-500">seksi, tk_b, tk_m, bt_b_1, bt_b_2, ba_b_1, bb_b_1, ba_b_2, bb_b_2, bt_m_1, bt_m_2,
+            ba_m_1, bb_m_1, ba_m_2, bb_m_2</p>
+        <p class="mb-4 text-gray-600 text-xs md:text-sm">Keterangan: seksi, tk_b, tk_m= Nama titik. bt= benang tengah.
+            ba= benang atas. bb= benang bawah. b= belakang. m= muka. 1= slag 1. 2= slag 2</p>
         <p class="mb-4">Apakah sudah sesuai?</p>
         <div class="flex gap-2 justify-start">
             <button onclick="cancelUpload()" class="px-4 py-2 bg-gray-400 text-white rounded">
@@ -156,34 +127,35 @@
 </div>
 
 <script>
-let selectedFileInput = null;
+    let selectedFileInput = null;
 
-function confirmFileUpload(input) {
-    selectedFileInput = input;
-    document.getElementById("uploadModal").classList.remove("hidden");
-    document.getElementById("uploadModal").classList.add("flex");
-}
-
-function cancelUpload() {
-    if (selectedFileInput) {
-        selectedFileInput.value = "";
+    function confirmFileUpload(input) {
+        selectedFileInput = input;
+        document.getElementById("uploadModal").classList.remove("hidden");
+        document.getElementById("uploadModal").classList.add("flex");
     }
-    closeModal();
-}
 
-function confirmUpload() {
-    closeModal();
-}
+    function cancelUpload() {
+        if (selectedFileInput) {
+            selectedFileInput.value = "";
+        }
+        closeModal();
+    }
 
-function closeModal() {
-    document.getElementById("uploadModal").classList.add("hidden");
-}
-</script> -->
+    function confirmUpload() {
+        closeModal();
+    }
+
+    function closeModal() {
+        document.getElementById("uploadModal").classList.add("hidden");
+    }
+</script>
 
 <a href="/info"
-   class="fixed bottom-6 right-6 z-50 bg-indigo-700 hover:bg-indigo-500 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-colors duration-200">
+    class="fixed bottom-6 right-6 z-50 bg-indigo-700 hover:bg-indigo-500 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-colors duration-200">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" />
     </svg>
 </a>
 {% endblock %}

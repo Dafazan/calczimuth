@@ -229,5 +229,124 @@ def result():
     return render_template("vertical.html")
 
 
-if __name__ == "__main__":
+
+
+
+# =========================
+# FUNCTION PERHITUNGAN KDV
+# =========================
+def hitung_kdv(df, nilai_awal):
+    df.columns = df.columns.str.strip()
+
+    def hitung_data(row):
+        bt_b_1 = float(row['bt_b_1'])
+        bt_b_2 = float(row['bt_b_2'])
+        ba_b_1 = float(row['ba_b_1'])
+        bb_b_1 = float(row['bb_b_1'])
+        ba_b_2 = float(row['ba_b_2'])
+        bb_b_2 = float(row['bb_b_2'])
+
+        bt_m_1 = float(row['bt_m_1'])
+        bt_m_2 = float(row['bt_m_2'])
+        ba_m_1 = float(row['ba_m_1'])
+        bb_m_1 = float(row['bb_m_1'])
+        ba_m_2 = float(row['ba_m_2'])
+        bb_m_2 = float(row['bb_m_2'])
+
+        # Koreksi tiga benang
+        correction_b1 = ba_b_1 + bb_b_1 - (bt_b_1 * 2)
+        correction_b2 = ba_b_2 + bb_b_2 - (bt_b_2 * 2)
+        correction_m1 = ba_m_1 + bb_m_1 - (bt_m_1 * 2)
+        correction_m2 = ba_m_2 + bb_m_2 - (bt_m_2 * 2)
+
+        # Jarak
+        db1 = (ba_b_1 - bb_b_1) * 100
+        db2 = (ba_b_2 - bb_b_2) * 100
+        dm1 = (ba_m_1 - bb_m_1) * 100
+        dm2 = (ba_m_2 - bb_m_2) * 100
+
+        db = db1 + db2
+        dm = dm1 + dm2
+        d_sect = db + dm
+
+        # Beda tinggi
+        bts1 = bt_m_1 - bt_b_1
+        bts2 = bt_m_2 - bt_b_2
+        diff = bts1 + bts2
+
+        return pd.Series({
+            'correction_b1': correction_b1,
+            'correction_b2': correction_b2,
+            'correction_m1': correction_m1,
+            'correction_m2': correction_m2,
+            'db': db,
+            'dm': dm,
+            'd_sect': d_sect,
+            'bts1': bts1,
+            'bts2': bts2,
+            'diff': diff
+        })
+
+    hasil = df.apply(hitung_data, axis=1)
+    df_hasil = pd.concat([df, hasil], axis=1)
+
+    # Akumulasi awal
+    df_hasil['hasil_akumulasi'] = nilai_awal + df_hasil['diff'].cumsum()
+
+    # Koreksi KDV Loop Tertutup
+    fh = df_hasil['diff'].sum()
+    total_jarak = df_hasil['d_sect'].sum()
+
+    df_hasil['koreksi_kdv'] = -fh * (
+        df_hasil['d_sect'] / total_jarak
+    )
+
+    df_hasil['delta_h_koreksi'] = (
+        df_hasil['diff'] + df_hasil['koreksi_kdv']
+    )
+
+    # Elevasi terkoreksi
+    df_hasil['elevasi_terkoreksi'] = (
+        nilai_awal + df_hasil['delta_h_koreksi'].cumsum()
+    )
+
+    return df_hasil, fh, total_jarak
+
+
+
+# =========================
+# ROUTE PROSES DATA
+# =========================
+@app.route('/uploadkdv', methods=['POST'])
+def uploadkdv():
+    file = request.files.get('file')
+
+    if not file or file.filename == '':
+        return render_template(
+            "verticalindex.html",
+            error="Silakan unggah file CSV terlebih dahulu."
+        )
+
+    try:
+        nilai_awal = float(request.form['nilai_awal'])
+        df = pd.read_csv(file)  # Dibaca langsung dari memori
+
+        df_hasil, fh, total_jarak = hitung_kdv(df, nilai_awal)
+
+        return render_template(
+            "verticalindex.html",
+            data_csv=df.to_dict(orient='records'),
+            hasil=df_hasil.to_dict(orient='records'),
+            fh=round(fh, 6),
+            total_jarak=round(total_jarak, 2)
+        )
+
+    except Exception as e:
+        return render_template(
+            "verticalindex.html",
+            error=f"Terjadi kesalahan: {e}"
+        )
+
+
+if __name__ == '__main__':
     app.run(debug=True)

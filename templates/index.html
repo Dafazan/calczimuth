@@ -21,9 +21,7 @@
                         <div class="w-full bg-white rounded-md p-1 w-full space-y-3">
                             <label class="block">
                                 <span class="sr-only">Choose csv</span>
-                                <input type="file" name="file"
-                                    onchange="confirmFileUpload(this)"
-                                    class="block w-full text-sm text-muted-foreground-1 focus:outline-hidden
+                                <input type="file" name="file" onchange="confirmFileUpload(this)" class="block w-full text-sm text-muted-foreground-1 focus:outline-hidden
                                     file:me-4 file:py-2 file:px-4
                                     file:rounded-lg file:border-0
                                     file:text-sm file:font-semibold
@@ -35,27 +33,33 @@
                         <div class="flex gap-2 w-full">
                             <p class="text-gray-400 w-3/6">X Awal</p>
                             <label class="block w-full">
-                                <input type="text" name="x_awal" class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
+                                <input type="text" name="x_awal"
+                                    class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
                             </label>
                         </div>
                         <div class="flex gap-2 w-full">
                             <p class="text-gray-400 w-3/6">Y Awal</p>
                             <label class="block w-full">
-                                <input type="text" name="y_awal" class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
+                                <input type="text" name="y_awal"
+                                    class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
                             </label>
                         </div>
                         <div class="flex gap-2 w-full">
                             <p class="text-gray-400 w-3/6">Azimuth Awal</p>
                             <label class="block w-full flex gap-2">
                                 <div class="flex gap-1">
-                                    <input type="text" name="az_d" class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden"> <p class="text-white">D</p>
+                                    <input type="text" name="az_d"
+                                        class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
+                                    <p class="text-white">D</p>
                                 </div>
                                 <div class="flex gap-1">
-                                    <input type="text" name="az_m" class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
+                                    <input type="text" name="az_m"
+                                        class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
                                     <p class="text-white">M</p>
                                 </div>
                                 <div class="flex gap-1">
-                                    <input type="text" name="az_s" class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
+                                    <input type="text" name="az_s"
+                                        class="block rounded-md w-full text-sm text-muted-foreground-1 p-1 focus:outline-hidden">
                                     <p class="text-white">S</p>
                                 </div>
                             </label>
@@ -177,19 +181,21 @@
     <div class="bg-white p-6 rounded-lg shadow-lg w-[90%] md:w-[70%]">
         <div class="flex items-center gap-3 mb-4">
             <div class="bg-red-100 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     class="h-6 w-6 text-red-600"
-                     fill="none"
-                     viewBox="0 0 24 24"
-                     stroke="currentColor">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 9v2m0 4h.01M10.29 3.86l-7.4 12.8A1 1 0 003.76 18h16.48a1 1 0 00.87-1.34l-7.4-12.8a1 1 0 00-1.74 0z"/>
+                        d="M12 9v2m0 4h.01M10.29 3.86l-7.4 12.8A1 1 0 003.76 18h16.48a1 1 0 00.87-1.34l-7.4-12.8a1 1 0 00-1.74 0z" />
                 </svg>
             </div>
             <h2 class="text-lg font-semibold text-red-600">Konfirmasi Upload</h2>
         </div>
-        <p class="mb-4 text-gray-600">File .csv harus dengan format ini:</p>
-        <p class="mb-4 text-gray-600 text-xs md:text-sm">Nama Titik alat, Nama Titik Backsight, Nama Titik Foresight, Degree Backsight, Menit Backsight, Detik Backsight, Derajat Foresight, Menit Foresight, Detik Foresight, Jarak Backsight, Jarak Foresight</p>
+        <p class="mb-4 text-gray-600">File .csv harus merupakan pengukuran <span class="text-blue-500">Poligon
+                Tertutup</span> dan memiliki kolom dengan format nama ini:</p>
+        <p class="mb-4 text-gray-600 text-xs md:text-sm">Nama Titik alat, Nama Titik Backsight, Nama Titik Foresight,
+            Degree Backsight, Menit Backsight, Detik Backsight, Derajat Foresight, Menit Foresight, Detik Foresight,
+            Jarak Backsight, Jarak Foresight</p>
+        <p class="mb-4 text-blue-500">standing_alat, tk_a, tk_b, deg_a, min_a, sec_a, deg_b, min_b, sec_b, distance_a,
+            distance-b</p>
         <p class="mb-4">Apakah sudah sesuai?</p>
         <div class="flex gap-2 justify-start">
             <button onclick="cancelUpload()" class="px-4 py-2 bg-gray-400 text-white rounded">
@@ -203,34 +209,35 @@
 </div>
 
 <script>
-let selectedFileInput = null;
+    let selectedFileInput = null;
 
-function confirmFileUpload(input) {
-    selectedFileInput = input;
-    document.getElementById("uploadModal").classList.remove("hidden");
-    document.getElementById("uploadModal").classList.add("flex");
-}
-
-function cancelUpload() {
-    if (selectedFileInput) {
-        selectedFileInput.value = "";
+    function confirmFileUpload(input) {
+        selectedFileInput = input;
+        document.getElementById("uploadModal").classList.remove("hidden");
+        document.getElementById("uploadModal").classList.add("flex");
     }
-    closeModal();
-}
 
-function confirmUpload() {
-    closeModal();
-}
+    function cancelUpload() {
+        if (selectedFileInput) {
+            selectedFileInput.value = "";
+        }
+        closeModal();
+    }
 
-function closeModal() {
-    document.getElementById("uploadModal").classList.add("hidden");
-}
+    function confirmUpload() {
+        closeModal();
+    }
+
+    function closeModal() {
+        document.getElementById("uploadModal").classList.add("hidden");
+    }
 </script>
 
 <a href="/info"
-   class="fixed bottom-6 right-6 z-50 bg-indigo-700 hover:bg-indigo-500 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-colors duration-200">
+    class="fixed bottom-6 right-6 z-50 bg-indigo-700 hover:bg-indigo-500 text-white rounded-full w-12 h-12 flex items-center justify-center shadow-lg transition-colors duration-200">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z"/>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20A10 10 0 0012 2z" />
     </svg>
 </a>
 {% endblock %}
